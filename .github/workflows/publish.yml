@@ -13,6 +13,8 @@ jobs:
       packages: write
     env:
       IMAGE_NAME: ghcr.io/${{ github.repository }}
+      APP_NAMESPACE: argocd
+      APP_NAME: oikos-page
     steps:
       - uses: actions/checkout@v4
       - name: Compute image tags
@@ -43,8 +45,10 @@ jobs:
           sed -i.bak "s|image: .*|image: $IMAGE_NAME:${{ steps.vars.outputs.sha_tag }}|" deploy/k8s/deployment.yaml
           rm deploy/k8s/deployment.yaml.bak
       - name: Commit deployment manifest
+        id: deploy_commit
         run: |
           if git diff --quiet -- deploy/k8s/deployment.yaml; then
+            echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           git config user.name "github-actions[bot]"
@@ -52,3 +56,59 @@ jobs:
           git add deploy/k8s/deployment.yaml
           git commit -m "[skip ci] Deploy ${{ steps.vars.outputs.sha_tag }}"
           git push
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - uses: azure/setup-kubectl@v4
+      - name: Write kubeconfig
+        env:
+          K8S_SERVER: ${{ secrets.ARGOCD_SYNC_K8S_SERVER }}
+          K8S_CA_CRT: ${{ secrets.ARGOCD_SYNC_K8S_CA_CRT }}
+          K8S_TOKEN: ${{ secrets.ARGOCD_SYNC_K8S_TOKEN }}
+        run: |
+          test -n "$K8S_SERVER"
+          test -n "$K8S_CA_CRT"
+          test -n "$K8S_TOKEN"
+          mkdir -p "$RUNNER_TEMP/.kube"
+          cat > "$RUNNER_TEMP/.kube/config" <<EOF
+          apiVersion: v1
+          kind: Config
+          clusters:
+          - cluster:
+              certificate-authority-data: ${K8S_CA_CRT}
+              server: ${K8S_SERVER}
+            name: cluster
+          contexts:
+          - context:
+              cluster: cluster
+              namespace: ${APP_NAMESPACE}
+              user: oikos-page-ci-sync
+            name: ci
+          current-context: ci
+          users:
+          - name: oikos-page-ci-sync
+            user:
+              token: ${K8S_TOKEN}
+          EOF
+          echo "KUBECONFIG=$RUNNER_TEMP/.kube/config" >> "$GITHUB_ENV"
+      - name: Force Argo CD sync
+        run: |
+          kubectl -n "${APP_NAMESPACE}" patch application "${APP_NAME}" --type merge -p \
+            '{"metadata":{"annotations":{"argocd.argoproj.io/refresh":"hard"}}}'
+          kubectl -n "${APP_NAMESPACE}" patch application "${APP_NAME}" --type merge -p \
+            '{"operation":{"sync":{"prune":true,"syncOptions":["CreateNamespace=false"]}}}'
+      - name: Wait for deployment revision
+        env:
+          EXPECTED_REVISION: ${{ steps.deploy_commit.outputs.sha }}
+        run: |
+          test -n "$EXPECTED_REVISION"
+          for _ in $(seq 1 60); do
+            ACTUAL_REVISION="$(kubectl -n "${APP_NAMESPACE}" get application "${APP_NAME}" -o jsonpath='{.status.sync.revision}')"
+            SYNC_STATUS="$(kubectl -n "${APP_NAMESPACE}" get application "${APP_NAME}" -o jsonpath='{.status.sync.status}')"
+            HEALTH_STATUS="$(kubectl -n "${APP_NAMESPACE}" get application "${APP_NAME}" -o jsonpath='{.status.health.status}')"
+            if [ "$ACTUAL_REVISION" = "$EXPECTED_REVISION" ] && [ "$SYNC_STATUS" = "Synced" ] && [ "$HEALTH_STATUS" = "Healthy" ]; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Argo CD did not reach revision $EXPECTED_REVISION in time" >&2
+          kubectl -n "${APP_NAMESPACE}" get application "${APP_NAME}" -o yaml
+          exit 1
