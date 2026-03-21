@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: page
-          image: ghcr.io/mnlx/oikos-page:sha-cecf94c9a01d
+          image: ghcr.io/mnlx/oikos-page:sha-9aa78d1ce93c
           imagePullPolicy: Always
           ports:
             - containerPort: 80
