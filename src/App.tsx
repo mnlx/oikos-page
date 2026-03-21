@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { fetchListing, fetchListings, fetchSummary } from "./api";
 import { DetailsPanel } from "./components/DetailsPanel";
@@ -11,6 +11,10 @@ export default function App() {
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [priceMin, setPriceMin] = useState("");
+  const [priceMax, setPriceMax] = useState("");
+  const [minArea, setMinArea] = useState("");
+  const [minBedrooms, setMinBedrooms] = useState("");
 
   useEffect(() => {
     async function load() {
@@ -39,10 +43,46 @@ export default function App() {
     }
   }
 
+  const filteredListings = useMemo(() => {
+    const parsedPriceMin = Number(priceMin) || 0;
+    const parsedPriceMax = Number(priceMax) || Number.POSITIVE_INFINITY;
+    const parsedMinArea = Number(minArea) || 0;
+    const parsedMinBedrooms = Number(minBedrooms) || 0;
+
+    return listings.filter((listing) => {
+      const price = listing.price_rent ?? listing.price_sale ?? 0;
+      const area = listing.area_m2 ?? 0;
+      const bedrooms = listing.bedrooms ?? 0;
+
+      return (
+        price >= parsedPriceMin &&
+        price <= parsedPriceMax &&
+        area >= parsedMinArea &&
+        bedrooms >= parsedMinBedrooms
+      );
+    });
+  }, [listings, minArea, minBedrooms, priceMax, priceMin]);
+
   return (
     <main className="app-shell">
       {error && <div className="error-banner">{error}</div>}
-      <ListingList listings={listings} selectedId={selectedListing?.id ?? null} onSelect={handleSelect} />
+      <ListingList
+        listings={filteredListings}
+        selectedId={selectedListing?.id ?? null}
+        onSelect={handleSelect}
+        filters={{
+          priceMin,
+          priceMax,
+          minArea,
+          minBedrooms,
+        }}
+        onFiltersChange={{
+          setPriceMin,
+          setPriceMax,
+          setMinArea,
+          setMinBedrooms,
+        }}
+      />
       <section className="content-pane">
         <DetailsPanel listing={selectedListing} summary={summary} />
         <MapPanel listing={selectedListing} />

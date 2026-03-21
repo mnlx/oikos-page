@@ -46,13 +46,15 @@ button {
   display: flex;
   flex-direction: column;
   min-height: 0;
+  overflow: hidden;
 }
 
 .content-pane {
   display: grid;
-  grid-template-rows: minmax(320px, 1fr) minmax(280px, 0.9fr);
+  grid-template-rows: repeat(2, minmax(0, 1fr));
   gap: 18px;
   min-height: 0;
+  height: calc(100vh - 36px);
 }
 
 .pane-header {
@@ -86,6 +88,30 @@ button {
   gap: 10px;
   overflow: auto;
   padding-right: 6px;
+  min-height: 0;
+}
+
+.listing-filters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.listing-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: #5e6c78;
+}
+
+.listing-filters input {
+  border: 1px solid rgba(21, 59, 80, 0.12);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.85);
+  color: #17212b;
 }
 
 .listing-card {
@@ -117,6 +143,7 @@ button {
 .listing-card strong {
   display: block;
   margin: 8px 0 6px;
+  color: #22303b;
 }
 
 .listing-card p,
@@ -127,15 +154,31 @@ button {
   color: #425364;
 }
 
+.listing-price {
+  margin-top: 10px;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #17212b;
+}
+
+.listing-subtle,
+.listing-card-top,
+.listing-metrics {
+  color: #6f7d89;
+}
+
 .details-pane,
 .map-pane {
   padding: 20px;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .details-pane {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  overflow: auto;
 }
 
 .scrape-meta ul {
@@ -169,7 +212,7 @@ button {
 .map-frame iframe {
   width: 100%;
   height: 100%;
-  min-height: 260px;
+  min-height: 0;
   border: 0;
   border-radius: 18px;
 }
@@ -200,6 +243,7 @@ button {
 
   .content-pane {
     grid-template-rows: auto auto;
+    height: auto;
   }
 
   .detail-links {
