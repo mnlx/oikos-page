@@ -10,6 +10,10 @@ type Props = {
     minArea: string;
     minBedrooms: string;
     transactionType: "all" | "rent" | "sale";
+    propertyTypeFilters: {
+      apartment: boolean;
+      house: boolean;
+    };
   };
   onFiltersChange: {
     setPriceMin: (value: string) => void;
@@ -17,6 +21,7 @@ type Props = {
     setMinArea: (value: string) => void;
     setMinBedrooms: (value: string) => void;
     setTransactionType: (value: "all" | "rent" | "sale") => void;
+    setPropertyTypeFilters: (value: { apartment: boolean; house: boolean }) => void;
   };
 };
 
@@ -32,6 +37,13 @@ function money(value: number | null | undefined): string {
 }
 
 export function ListingList({ listings, selectedId, onSelect, filters, onFiltersChange }: Props) {
+  function togglePropertyType(type: "apartment" | "house") {
+    onFiltersChange.setPropertyTypeFilters({
+      ...filters.propertyTypeFilters,
+      [type]: !filters.propertyTypeFilters[type],
+    });
+  }
+
   return (
     <aside className="listing-pane">
       <div className="pane-header">
@@ -63,12 +75,28 @@ export function ListingList({ listings, selectedId, onSelect, filters, onFilters
             Comprar
           </button>
         </div>
+        <div className="property-switch" role="group" aria-label="Tipo de imóvel">
+          <button
+            type="button"
+            className={filters.propertyTypeFilters.apartment ? "is-active" : ""}
+            onClick={() => togglePropertyType("apartment")}
+          >
+            Apartamentos
+          </button>
+          <button
+            type="button"
+            className={filters.propertyTypeFilters.house ? "is-active" : ""}
+            onClick={() => togglePropertyType("house")}
+          >
+            Casas
+          </button>
+        </div>
         <label>
           <span>Preco min</span>
           <input
             type="number"
             min="0"
-            placeholder="0"
+            placeholder="R$ 0"
             value={filters.priceMin}
             onChange={(event) => onFiltersChange.setPriceMin(event.target.value)}
           />
@@ -78,7 +106,7 @@ export function ListingList({ listings, selectedId, onSelect, filters, onFilters
           <input
             type="number"
             min="0"
-            placeholder="sem teto"
+            placeholder="Sem limite"
             value={filters.priceMax}
             onChange={(event) => onFiltersChange.setPriceMax(event.target.value)}
           />
@@ -88,7 +116,7 @@ export function ListingList({ listings, selectedId, onSelect, filters, onFilters
           <input
             type="number"
             min="0"
-            placeholder="m²"
+            placeholder="Ex. 65 m²"
             value={filters.minArea}
             onChange={(event) => onFiltersChange.setMinArea(event.target.value)}
           />
@@ -98,7 +126,7 @@ export function ListingList({ listings, selectedId, onSelect, filters, onFilters
           <input
             type="number"
             min="0"
-            placeholder="0"
+            placeholder="Ex. 2"
             value={filters.minBedrooms}
             onChange={(event) => onFiltersChange.setMinBedrooms(event.target.value)}
           />

@@ -2,17 +2,22 @@
   font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
   color: #17212b;
   background:
-    radial-gradient(circle at top left, rgba(232, 166, 96, 0.24), transparent 28%),
-    linear-gradient(135deg, #f6f0e6 0%, #ebe5da 42%, #dfe6e4 100%);
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.78), transparent 28%),
+    linear-gradient(145deg, #dce2e8 0%, #cbd4dc 52%, #c1cad3 100%);
 }
 
 * {
   box-sizing: border-box;
 }
 
+html,
 body {
   margin: 0;
-  min-height: 100vh;
+  height: 100%;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.78), transparent 28%),
+    linear-gradient(145deg, #dce2e8 0%, #cbd4dc 52%, #c1cad3 100%);
 }
 
 a {
@@ -26,42 +31,44 @@ button {
 .app-shell {
   display: grid;
   grid-template-columns: minmax(320px, 380px) 1fr;
-  min-height: 100vh;
-  padding: 18px;
-  gap: 18px;
+  height: 100vh;
+  padding: 14px;
+  gap: 14px;
 }
 
 .listing-pane,
 .details-pane,
 .map-pane {
-  background: rgba(255, 255, 255, 0.78);
+  background: rgba(244, 247, 250, 0.88);
   border: 1px solid rgba(21, 59, 80, 0.08);
-  border-radius: 24px;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 18px 48px rgba(35, 46, 57, 0.1);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 18px 48px rgba(56, 72, 88, 0.08);
 }
 
 .listing-pane {
-  padding: 20px;
+  padding: 22px 18px 18px;
   display: flex;
   flex-direction: column;
-  min-height: 0;
+  height: calc(100vh - 28px);
   overflow: hidden;
+  border-radius: 24px;
 }
 
 .content-pane {
   display: grid;
   grid-template-rows: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  gap: 14px;
   min-height: 0;
-  height: calc(100vh - 36px);
+  height: calc(100vh - 28px);
+  padding: 0;
 }
 
 .pane-header {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
+  padding-inline: 6px;
 }
 
 .pane-header.compact {
@@ -85,73 +92,118 @@ button {
 .listing-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   overflow: auto;
-  padding-right: 6px;
+  padding: 6px 4px 4px;
   min-height: 0;
 }
 
 .listing-filters {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  margin-bottom: 16px;
+  gap: 12px;
+  margin: 0 6px 16px;
+  padding: 14px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(21, 59, 80, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.transaction-switch,
+.property-switch {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(48, 63, 77, 0.07);
 }
 
 .transaction-switch {
-  grid-column: 1 / -1;
-  display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
-  padding: 6px;
-  border-radius: 14px;
-  background: rgba(21, 59, 80, 0.06);
 }
 
-.transaction-switch button {
+.property-switch {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.transaction-switch button,
+.property-switch button {
   border: 0;
-  border-radius: 10px;
-  padding: 10px 8px;
+  border-radius: 999px;
+  padding: 6px 7px;
   background: transparent;
-  color: #5e6c78;
+  color: #61707d;
   cursor: pointer;
+  font-size: 0.71rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: background 160ms ease, color 160ms ease, transform 160ms ease;
 }
 
-.transaction-switch button.is-active {
-  background: #153b50;
-  color: #f6f0e6;
+.transaction-switch button:hover,
+.property-switch button:hover {
+  transform: translateY(-1px);
+}
+
+.transaction-switch button.is-active,
+.property-switch button.is-active {
+  background: linear-gradient(135deg, #384654 0%, #4b5d71 100%);
+  color: #f8fafc;
+  box-shadow: 0 8px 18px rgba(56, 70, 84, 0.18);
 }
 
 .listing-filters label {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  font-size: 0.78rem;
-  color: #5e6c78;
+  font-size: 0.72rem;
+  color: #6b7884;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
 }
 
 .listing-filters input {
-  border: 1px solid rgba(21, 59, 80, 0.12);
-  border-radius: 12px;
-  padding: 10px 12px;
-  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(66, 83, 100, 0.1);
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.88);
   color: #17212b;
+  font-size: 0.95rem;
+  font-weight: 500;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.listing-filters input::placeholder {
+  color: #94a0ab;
+}
+
+.listing-filters input:focus {
+  outline: none;
+  border-color: rgba(72, 98, 122, 0.34);
+  box-shadow: 0 0 0 4px rgba(105, 132, 157, 0.12);
+  background: #ffffff;
 }
 
 .listing-card {
   text-align: left;
   border: 0;
   border-radius: 18px;
-  padding: 14px;
-  background: #f7f4ee;
+  padding: 16px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.88) 0%, rgba(232, 237, 242, 0.96) 100%);
   cursor: pointer;
-  transition: transform 160ms ease, background 160ms ease;
+  transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
+  box-shadow: 0 10px 28px rgba(76, 91, 107, 0.08);
 }
 
 .listing-card:hover,
 .listing-card.is-selected {
-  background: #eadcc7;
-  transform: translateY(-1px);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(221, 229, 238, 0.98) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(76, 91, 107, 0.12);
 }
 
 .listing-card-top,
@@ -196,6 +248,7 @@ button {
   padding: 20px;
   min-height: 0;
   overflow: hidden;
+  border-radius: 24px;
 }
 
 .details-pane {
@@ -238,7 +291,7 @@ button {
   height: 100%;
   min-height: 0;
   border: 0;
-  border-radius: 18px;
+  border-radius: 0;
 }
 
 .empty-state {
@@ -256,13 +309,26 @@ button {
   background: #7d1f1f;
   color: #fff;
   padding: 10px 14px;
-  border-radius: 12px;
+  border-radius: 4px;
   z-index: 10;
 }
 
 @media (max-width: 960px) {
+  html,
+  body {
+    overflow: auto;
+  }
+
   .app-shell {
     grid-template-columns: 1fr;
+    height: auto;
+    min-height: 100vh;
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .listing-pane {
+    height: auto;
   }
 
   .content-pane {
