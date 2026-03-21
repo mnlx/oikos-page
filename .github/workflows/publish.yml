@@ -90,11 +90,14 @@ jobs:
           EOF
           echo "KUBECONFIG=$RUNNER_TEMP/.kube/config" >> "$GITHUB_ENV"
       - name: Force Argo CD sync
+        env:
+          EXPECTED_REVISION: ${{ steps.deploy_commit.outputs.sha }}
         run: |
+          test -n "$EXPECTED_REVISION"
           kubectl -n "${APP_NAMESPACE}" patch application "${APP_NAME}" --type merge -p \
             '{"metadata":{"annotations":{"argocd.argoproj.io/refresh":"hard"}}}'
           kubectl -n "${APP_NAMESPACE}" patch application "${APP_NAME}" --type merge -p \
-            '{"operation":{"sync":{"prune":true,"syncOptions":["CreateNamespace=false"]}}}'
+            "{\"operation\":{\"sync\":{\"revision\":\"${EXPECTED_REVISION}\",\"prune\":true,\"syncOptions\":[\"CreateNamespace=false\"]}}}"
       - name: Wait for deployment revision
         env:
           EXPECTED_REVISION: ${{ steps.deploy_commit.outputs.sha }}
