@@ -1,0 +1,40 @@
+export type Listing = {
+  id: number;
+  title: string;
+  canonical_url: string;
+  transaction_type: string;
+  property_type: string;
+  city: string;
+  state: string;
+  neighborhood: string | null;
+  address: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  price_sale: number | null;
+  price_rent: number | null;
+  condo_fee?: number | null;
+  iptu?: number | null;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  parking_spaces: number | null;
+  area_m2: number | null;
+  broker_name: string | null;
+  description?: string | null;
+  published_at?: string | null;
+  first_seen_at?: string;
+  last_seen_at?: string;
+  last_scraped_at: string;
+  is_active?: boolean;
+  source_code: string;
+  source_name: string;
+  raw_payload: Record<string, unknown>;
+};
+
+export type Summary = {
+  listing_count: number;
+  active_listing_count: number;
+  source_count: number;
+  latest_scrape_started_at: string | null;
+  latest_scrape_finished_at: string | null;
+  latest_scrape_status: string | null;
+};

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oikos-page
+  namespace: oikos
+  labels:
+    app: oikos-page
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oikos-page
+  template:
+    metadata:
+      labels:
+        app: oikos-page
+    spec:
+      containers:
+        - name: page
+          image: ghcr.io/mnlx/oikos-page:main
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
