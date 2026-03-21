@@ -15,6 +15,7 @@ export default function App() {
   const [priceMax, setPriceMax] = useState("");
   const [minArea, setMinArea] = useState("");
   const [minBedrooms, setMinBedrooms] = useState("");
+  const [transactionType, setTransactionType] = useState<"all" | "rent" | "sale">("all");
 
   useEffect(() => {
     async function load() {
@@ -55,13 +56,14 @@ export default function App() {
       const bedrooms = listing.bedrooms ?? 0;
 
       return (
+        (transactionType === "all" || listing.transaction_type === transactionType) &&
         price >= parsedPriceMin &&
         price <= parsedPriceMax &&
         area >= parsedMinArea &&
         bedrooms >= parsedMinBedrooms
       );
     });
-  }, [listings, minArea, minBedrooms, priceMax, priceMin]);
+  }, [listings, minArea, minBedrooms, priceMax, priceMin, transactionType]);
 
   return (
     <main className="app-shell">
@@ -75,12 +77,14 @@ export default function App() {
           priceMax,
           minArea,
           minBedrooms,
+          transactionType,
         }}
         onFiltersChange={{
           setPriceMin,
           setPriceMax,
           setMinArea,
           setMinBedrooms,
+          setTransactionType,
         }}
       />
       <section className="content-pane">

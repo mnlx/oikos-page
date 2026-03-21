@@ -98,6 +98,30 @@ button {
   margin-bottom: 16px;
 }
 
+.transaction-switch {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  padding: 6px;
+  border-radius: 14px;
+  background: rgba(21, 59, 80, 0.06);
+}
+
+.transaction-switch button {
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 8px;
+  background: transparent;
+  color: #5e6c78;
+  cursor: pointer;
+}
+
+.transaction-switch button.is-active {
+  background: #153b50;
+  color: #f6f0e6;
+}
+
 .listing-filters label {
   display: flex;
   flex-direction: column;

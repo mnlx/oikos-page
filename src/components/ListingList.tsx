@@ -9,12 +9,14 @@ type Props = {
     priceMax: string;
     minArea: string;
     minBedrooms: string;
+    transactionType: "all" | "rent" | "sale";
   };
   onFiltersChange: {
     setPriceMin: (value: string) => void;
     setPriceMax: (value: string) => void;
     setMinArea: (value: string) => void;
     setMinBedrooms: (value: string) => void;
+    setTransactionType: (value: "all" | "rent" | "sale") => void;
   };
 };
 
@@ -38,6 +40,29 @@ export function ListingList({ listings, selectedId, onSelect, filters, onFilters
         <span>{listings.length} resultados</span>
       </div>
       <div className="listing-filters">
+        <div className="transaction-switch" role="tablist" aria-label="Tipo de negocio">
+          <button
+            type="button"
+            className={filters.transactionType === "all" ? "is-active" : ""}
+            onClick={() => onFiltersChange.setTransactionType("all")}
+          >
+            Todos
+          </button>
+          <button
+            type="button"
+            className={filters.transactionType === "rent" ? "is-active" : ""}
+            onClick={() => onFiltersChange.setTransactionType("rent")}
+          >
+            Alugar
+          </button>
+          <button
+            type="button"
+            className={filters.transactionType === "sale" ? "is-active" : ""}
+            onClick={() => onFiltersChange.setTransactionType("sale")}
+          >
+            Comprar
+          </button>
+        </div>
         <label>
           <span>Preco min</span>
           <input
