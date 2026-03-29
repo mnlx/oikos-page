@@ -27,6 +27,9 @@ export type Listing = {
   is_active?: boolean;
   source_code: string;
   source_name: string;
+  image_uris?: string[];
+  image_count: number;
+  has_asset_links: boolean;
   raw_payload: Record<string, unknown>;
 };
 
